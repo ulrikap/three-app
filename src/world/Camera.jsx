@@ -8,42 +8,80 @@ var camera = new THREE.PerspectiveCamera(
   1000
 );
 
-camera.position.z = 1.5;
-camera.position.y = -7;
-camera.rotation.x = 1.8;
+camera.position.z = -3;
+camera.position.y = -3.5;
+camera.rotation.x = 4.6;
 
-export const rotationPositions = {
-  developer: {
-    z: 1.5,
+export const positions = {
+  original: {
+    rotation: { x: 0, y: 0, z: 0 },
+    position: { x: 0, y: -7, z: -3 },
   },
-  designer: { z: -1.5 },
-  original: { z: 0 },
+  developer: {
+    rotation: { x: 5.1, y: 0, z: 1.5 },
+    position: { x: 0, y: 0, z: -10 },
+  },
+  designer: {
+    rotation: { x: 0, y: 0, z: -1.5 },
+    position: { x: 0, y: 0, z: -10 },
+  },
 };
 
 export const rotate = (whatScreen) => {
+  let first;
+  let second;
   switch (whatScreen) {
     case "developer":
-      new TWEEN.Tween(camera.rotation)
-        .to({ z: rotationPositions.developer.z })
-        .easing(TWEEN.Easing.Exponential.Out)
-        .start();
+      first = new TWEEN.Tween(camera.position)
+        .to({ z: positions.developer.position.z })
+        .onStart(() => {
+          new TWEEN.Tween(camera.rotation)
+            .to({ z: positions.developer.rotation.z })
+            .easing(TWEEN.Easing.Cubic.InOut)
+            .duration(500)
+            .start();
+        })
+        .easing(TWEEN.Easing.Quadratic.InOut);
+
+      first.start();
       break;
     case "original":
-      new TWEEN.Tween(camera.rotation)
-        .to({ z: rotationPositions.original.z })
-        .easing(TWEEN.Easing.Exponential.Out)
-        .start();
+      if (
+        camera.position.x !== positions.original.position.x ||
+        camera.position.z !== positions.original.position.z ||
+        camera.position.y !== positions.original.position.y
+      ) {
+        console.log("im animating!");
+        second = new TWEEN.Tween(camera.position)
+          .to({ z: positions.original.position.z })
+          .easing(TWEEN.Easing.Quadratic.InOut);
+        first = new TWEEN.Tween(camera.rotation)
+          .to({ z: positions.original.rotation.z })
+          .easing(TWEEN.Easing.Cubic.InOut)
+          .duration(500);
+        first.chain(second).start();
+      }
+
       break;
     case "designer":
-      new TWEEN.Tween(camera.rotation)
-        .to({ z: rotationPositions.designer.z })
-        .easing(TWEEN.Easing.Exponential.Out)
-        .start();
+      first = new TWEEN.Tween(camera.position)
+        .to({ z: positions.designer.position.z })
+        .onStart(() => {
+          new TWEEN.Tween(camera.rotation)
+            .to({ z: positions.designer.rotation.z })
+            .easing(TWEEN.Easing.Cubic.InOut)
+            .duration(500)
+            .start();
+        })
+        .easing(TWEEN.Easing.Quadratic.InOut);
+      first.start();
       break;
 
     default:
       break;
   }
 };
+
+export const pan = () => {};
 
 export default camera;

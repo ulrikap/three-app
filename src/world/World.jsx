@@ -5,6 +5,7 @@ import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import camera from "./Camera";
 import * as TWEEN from "@tweenjs/tween.js";
+import particles from "../animations/AirParticles/Animation";
 
 const World = () => {
   const mountRef = useRef(null);
@@ -30,12 +31,22 @@ const World = () => {
       cursor.y = event.clientY / window.innerHeight - 0.5;
     });
 
-    // const controls = new OrbitControls(camera, renderer.domElement)
+    const geometry = new THREE.SphereGeometry(10, 64, 16);
+    const material = new THREE.MeshBasicMaterial({ color: 0xf1f1f1 });
+    const cube = new THREE.Mesh(geometry, material);
+    cube.position.set(25, -40, -5);
+    cube.castShadow = true;
+    scene.add(cube);
 
+    scene.add(cube);
+    scene.add(particles);
     /**
      * Debug camera
      */
     // var gui = new dat.GUI();
+    // gui.add(cube.position, "z", -100, 100).step(0.02);
+    // gui.add(cube.position, "y", -100, 100).step(0.02);
+    // gui.add(cube.position, "x", -100, 100).step(0.02);
     // gui.add(camera.position, "z", -10, 10).step(0.02);
     // gui.add(camera.position, "y", -10, 10).step(0.02);
     // gui.add(camera.position, "x", -10, 10).step(0.02);
@@ -45,8 +56,8 @@ const World = () => {
     // gui.add(camera.rotation, "x", -10, 10).step(0.02);
 
     var animate = function () {
-      camera.position.x = cursor.x * 0.5;
-      camera.position.y = cursor.y * 0.5;
+      // camera.position.x = cursor.x * 0.5;
+      // camera.position.y = cursor.y * 0.5;
 
       requestAnimationFrame(animate);
       meshAnimation();
