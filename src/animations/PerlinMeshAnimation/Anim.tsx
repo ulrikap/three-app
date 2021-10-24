@@ -7,14 +7,12 @@ const MeshAnim = ({
   position,
   rotation,
   grid: { width, height, separation },
-  colorOfXYZT,
   zOfXYT,
   anim: { init, update },
 }: {
   position: [number, number, number];
   rotation: Euler | undefined;
   grid: { width: number; height: number; separation: number };
-  colorOfXYZT: any;
   zOfXYT: any;
   anim: {
     init: any;
@@ -37,8 +35,7 @@ const MeshAnim = ({
         let z = zOfXYT(x, y, t);
         positions.push(x, y, z);
 
-        let color = colorOfXYZT(x, y, z, t);
-        colors.push(color.r, color.g, color.b);
+        colors.push(255, 255, 255);
         normals.push(0, 0, 1);
       }
     }
@@ -47,7 +44,7 @@ const MeshAnim = ({
       colors: new Float32Array(colors),
       normals: new Float32Array(normals),
     };
-  }, [width, height, separation, zOfXYT, t, colorOfXYZT]);
+  }, [width, height, separation, zOfXYT, t]);
 
   let indices = useMemo(() => {
     let indices = [];
@@ -77,7 +74,7 @@ const MeshAnim = ({
   const material = new THREE.MeshStandardMaterial({
     vertexColors: true,
     side: THREE.DoubleSide,
-    wireframe: true
+    wireframe: true,
   });
 
   const animation = () => {
@@ -87,15 +84,6 @@ const MeshAnim = ({
     for (let yi = 0; yi < height; yi++) {
       for (let xi = 0; xi < width; xi++) {
         positions[i + 2] = zOfXYT(positions[i], positions[i + 1], t);
-        let c = colorOfXYZT(
-          positions[i],
-          positions[i + 1],
-          positions[i + 2],
-          t
-        );
-        colors[i] = c.r;
-        colors[i + 1] = c.g;
-        colors[i + 2] = c.b;
         i += 3;
       }
     }
@@ -114,9 +102,9 @@ export const Anim = () => {
   noise.seed(seed);
 
   const sampleNoise = (x: any, y: any, z: any) => {
-    let scale = 1 / 8;
-    let octaves = 20;
-    let persistence = 0.6;
+    let scale = 1 / 12;
+    let octaves = 50;
+    let persistence = 0.5;
     let lacunarity = 2;
 
     let amp = 1;
@@ -131,21 +119,14 @@ export const Anim = () => {
   };
   const zOfXYT = (x: any, y: any, t: any) => sampleNoise(x, y, t);
 
-  const colorOfXYZT = (x: any, y: any, z: any, t: any) => ({
-    r: z,
-    g: z / 4,
-    b: Math.sqrt(x ** 2 + y ** 2) / 75,
-  });
-
   return MeshAnim({
-    position: [10, 10, 10],
+    position: [0, 0, 0],
     rotation: new THREE.Euler(-Math.PI / 2, 0, 0),
     grid: {
-      width: 100,
-      height: 100,
-      separation: 0.2,
+      width: 50,
+      height: 50,
+      separation: 2,
     },
-    colorOfXYZT,
     zOfXYT,
     anim: {
       init: 0,

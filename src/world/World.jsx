@@ -2,7 +2,9 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { Anim } from "../animations/PerlinMeshAnimation/Anim";
 import * as dat from "dat.gui";
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import camera from "./Camera";
+import * as TWEEN from "@tweenjs/tween.js";
 
 const World = () => {
   const mountRef = useRef(null);
@@ -13,23 +15,22 @@ const World = () => {
     var scene = new THREE.Scene();
 
     var ambientLight = new THREE.AmbientLight();
-    var camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
     var renderer = new THREE.WebGLRenderer();
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     mountRef.current.appendChild(renderer.domElement);
-    camera.position.x = 0;
-    camera.position.y = -4;
-    camera.position.z = 3;
 
-    camera.rotation.x = 1;
-    camera.rotation.y = 1.02;
-    const controls = new OrbitControls(camera, renderer.domElement)
+    const cursor = {
+      x: 0,
+      y: 0,
+    };
+
+    window.addEventListener("mousemove", (event) => {
+      cursor.x = event.clientX / window.innerWidth - 0.5;
+      cursor.y = event.clientY / window.innerHeight - 0.5;
+    });
+
+    // const controls = new OrbitControls(camera, renderer.domElement)
 
     /**
      * Debug camera
@@ -44,8 +45,12 @@ const World = () => {
     // gui.add(camera.rotation, "x", -10, 10).step(0.02);
 
     var animate = function () {
+      camera.position.x = cursor.x * 0.5;
+      camera.position.y = cursor.y * 0.5;
+
       requestAnimationFrame(animate);
       meshAnimation();
+      TWEEN.update();
       renderer.render(scene, camera);
     };
 
