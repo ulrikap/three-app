@@ -14,6 +14,7 @@ const World = () => {
 
   useEffect(() => {
     var scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf1f1f1);
 
     var ambientLight = new THREE.AmbientLight();
     var renderer = new THREE.WebGLRenderer();
@@ -31,14 +32,6 @@ const World = () => {
       cursor.y = event.clientY / window.innerHeight - 0.5;
     });
 
-    const geometry = new THREE.SphereGeometry(10, 64, 16);
-    const material = new THREE.MeshBasicMaterial({ color: 0xf1f1f1 });
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.set(25, -40, -5);
-    cube.castShadow = true;
-    scene.add(cube);
-
-    scene.add(cube);
     scene.add(particles);
     /**
      * Debug camera

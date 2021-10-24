@@ -114,9 +114,9 @@ export const Anim = () => {
   noise.seed(seed);
 
   const sampleNoise = (x: any, y: any, z: any) => {
-    let scale = 1 / 4;
-    let octaves = 50;
-    let persistence = 0.8;
+    let scale = 1 / 8;
+    let octaves = 10;
+    let persistence = 0.5;
     let lacunarity = 1;
 
     let amp = 1;
@@ -131,11 +131,11 @@ export const Anim = () => {
   };
   const zOfXYT = (x: any, y: any, t: any) => sampleNoise(x, y, t);
   const colorOfXYZT = (x: any, y: any, z: any, t: any) => {
-    const value = Math.sqrt(x ** 2 + y ** 2) / 75;
+    const value = Math.sqrt(x ** 2 + y ** 2) / 100;
     return {
-      r: value,
-      g: value,
-      b: value,
+      r: Math.sqrt(x ** 2 + y ** 2) / 200,
+      g: Math.sqrt(x ** 2 + y ** 2) / 100,
+      b: Math.sqrt(x ** 2 + y ** 2) / 65,
     };
   };
 
