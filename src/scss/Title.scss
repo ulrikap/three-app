@@ -14,7 +14,7 @@
   section {
     display: flex;
     flex-direction: column;
-    margin-left: 10rem;
+    margin-left: 2rem;
   }
 
   section:nth-child(1) {
@@ -23,12 +23,17 @@
 
   h1 {
     font-size: 3rem;
+    margin-bottom: 0;
   }
   h2 {
     font-size: 2rem;
+    margin-bottom: 5px;
   }
   h3 {
-    padding-left: 10px;
     opacity: 0.5;
+    margin: 0;
+  }
+  body{
+    margin: 20px 10px;
   }
 }

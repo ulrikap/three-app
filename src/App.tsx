@@ -4,15 +4,17 @@ import World from "./world/World";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Developer from "./pages/Developer/Developer";
 import Designer from "./pages/Designer/Designer";
+import { useState } from "react";
 
 function App() {
+  const [animation, setAnimation] = useState(true);
   return (
     <div className="App">
-      <World />
+      {animation && <World />}
       <Router>
         <Switch>
           <Route exact path="/">
-            <Title />
+            <Title {...{ setAnimation, animation }} />
           </Route>
           <Route path="/developer">
             <Developer />

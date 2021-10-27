@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import * as THREE from "three";
-import type { Euler } from "three";
 import noise, { perlin3 } from "./noise";
+import * as dat from "dat.gui";
 
 const MeshAnim = ({
   position,
@@ -12,7 +12,7 @@ const MeshAnim = ({
   anim: { init, update },
 }: {
   position: [number, number, number];
-  rotation: Euler | undefined;
+  rotation: [number, number, number];
   grid: { width: number; height: number; separation: number };
   colorOfXYZT: any;
   zOfXYT: any;
@@ -104,7 +104,9 @@ const MeshAnim = ({
   };
 
   const mesh = new THREE.Mesh(geometry, material);
+
   mesh.position.set(...position);
+  mesh.rotation.set(...rotation);
 
   return { mesh, animation };
 };
@@ -114,10 +116,14 @@ export const Anim = () => {
   noise.seed(seed);
 
   const sampleNoise = (x: any, y: any, z: any) => {
-    let scale = 1 / 8;
-    let octaves = 10;
+    // let scale = 1 / 6;
+    // let octaves = 50;
+    // let persistence = 0.4;
+    // let lacunarity = 0.5;
+    let scale = 1 / 2;
+    let octaves = 80;
     let persistence = 0.5;
-    let lacunarity = 1;
+    let lacunarity = 0.5;
 
     let amp = 1;
     let freq = 1;
@@ -131,7 +137,6 @@ export const Anim = () => {
   };
   const zOfXYT = (x: any, y: any, t: any) => sampleNoise(x, y, t);
   const colorOfXYZT = (x: any, y: any, z: any, t: any) => {
-    const value = Math.sqrt(x ** 2 + y ** 2) / 100;
     return {
       r: Math.sqrt(x ** 2 + y ** 2) / 200,
       g: Math.sqrt(x ** 2 + y ** 2) / 100,
@@ -140,8 +145,8 @@ export const Anim = () => {
   };
 
   return MeshAnim({
-    position: [0, 30, 0],
-    rotation: new THREE.Euler(-Math.PI / 2, 0, 0),
+    position: [0, 0, -50],
+    rotation: [-Math.PI / 2, 0, 0],
     grid: {
       width: 100,
       height: 100,

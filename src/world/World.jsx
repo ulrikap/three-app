@@ -1,57 +1,72 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import * as THREE from "three";
 import { Anim } from "../animations/PerlinMeshAnimation/Anim";
 import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import camera from "./Camera";
+import Boat from "./Boat";
+import Scene from "./Scene";
+import Lighthouse from "./Lighthouse";
+import BoatController from "./BoatController";
 import * as TWEEN from "@tweenjs/tween.js";
-import particles from "../animations/AirParticles/Animation";
+import { Material } from "three";
 
 const World = () => {
   const mountRef = useRef(null);
+  var gui = useMemo(() => new dat.GUI(), []);
 
+  const scene = Scene();
   const { animation: meshAnimation, mesh } = Anim();
+  let lightHouse;
+  let boat;
+
+  Lighthouse(scene, gui).then((value) => (lightHouse = value));
+  Boat(scene, gui).then((value) => {
+    boat = value;
+    BoatController(boat.instance);
+  });
 
   useEffect(() => {
-    var scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf1f1f1);
-
     var ambientLight = new THREE.AmbientLight();
     var renderer = new THREE.WebGLRenderer();
-
     renderer.setSize(window.innerWidth, window.innerHeight);
     mountRef.current.appendChild(renderer.domElement);
 
-    const cursor = {
-      x: 0,
-      y: 0,
-    };
+    const pointLight = new THREE.DirectionalLight(0x989898, 0.5, 100);
+    pointLight.position.set(-5.8, 5, -2.6);
+    pointLight.rotation.set(-0.086, 1.9, 0);
 
-    window.addEventListener("mousemove", (event) => {
-      cursor.x = event.clientX / window.innerWidth - 0.5;
-      cursor.y = event.clientY / window.innerHeight - 0.5;
+    scene.add(pointLight);
+
+    const pointLightHelper = new THREE.DirectionalLightHelper(pointLight);
+    scene.add(pointLightHelper);
+    window.requestAnimationFrame(() => {
+      pointLightHelper.update();
     });
 
-    scene.add(particles);
     /**
      * Debug camera
      */
-    // var gui = new dat.GUI();
-    // gui.add(cube.position, "z", -100, 100).step(0.02);
-    // gui.add(cube.position, "y", -100, 100).step(0.02);
-    // gui.add(cube.position, "x", -100, 100).step(0.02);
+    // ------ OrbitControls
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    // // ------ Position
     // gui.add(camera.position, "z", -10, 10).step(0.02);
     // gui.add(camera.position, "y", -10, 10).step(0.02);
     // gui.add(camera.position, "x", -10, 10).step(0.02);
 
+    // // ------ Rotation
     // gui.add(camera.rotation, "z", -10, 10).step(0.02);
     // gui.add(camera.rotation, "y", -10, 10).step(0.02);
     // gui.add(camera.rotation, "x", -10, 10).step(0.02);
 
-    var animate = function () {
-      // camera.position.x = cursor.x * 0.5;
-      // camera.position.y = cursor.y * 0.5;
+    const clock = new THREE.Clock();
 
+    var animate = function () {
+      const elapsedTime = clock.getElapsedTime();
+      if (boat) {
+        boat.rock(Math.sin(elapsedTime) / 3);
+      }
       requestAnimationFrame(animate);
       meshAnimation();
       TWEEN.update();
@@ -69,9 +84,7 @@ const World = () => {
     scene.add(ambientLight);
     scene.add(mesh);
     animate();
-
-    return () => mountRef.current.removeChild(renderer.domElement);
-  }, [mesh, meshAnimation]);
+  }, []);
 
   return <div ref={mountRef} className={"anim"}></div>;
 };
