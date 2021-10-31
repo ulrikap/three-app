@@ -7,6 +7,7 @@ import camera from "./Camera";
 import Boat from "./Boat";
 import Scene from "./Scene";
 import Lighthouse from "./Lighthouse";
+import Clouds from "./Clouds";
 import BoatController from "./BoatController";
 import * as TWEEN from "@tweenjs/tween.js";
 import { Material } from "three";
@@ -19,30 +20,22 @@ const World = () => {
   const { animation: meshAnimation, mesh } = Anim();
   let lightHouse;
   let boat;
+  let clouds;
 
   Lighthouse(scene, gui).then((value) => (lightHouse = value));
   Boat(scene, gui).then((value) => {
     boat = value;
     BoatController(boat.instance);
   });
+  Clouds(scene, gui).then((value) => {
+    clouds = value;
+    console.log(value);
+  });
 
   useEffect(() => {
-    var ambientLight = new THREE.AmbientLight();
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     mountRef.current.appendChild(renderer.domElement);
-
-    const pointLight = new THREE.DirectionalLight(0x989898, 0.5, 100);
-    pointLight.position.set(-5.8, 5, -2.6);
-    pointLight.rotation.set(-0.086, 1.9, 0);
-
-    scene.add(pointLight);
-
-    const pointLightHelper = new THREE.DirectionalLightHelper(pointLight);
-    scene.add(pointLightHelper);
-    window.requestAnimationFrame(() => {
-      pointLightHelper.update();
-    });
 
     /**
      * Debug camera
@@ -81,7 +74,6 @@ const World = () => {
 
     window.addEventListener("resize", onWindowResize, false);
 
-    scene.add(ambientLight);
     scene.add(mesh);
     animate();
   }, []);
