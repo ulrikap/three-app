@@ -1,13 +1,11 @@
 import "./App.scss";
 import World from "./world/World";
 import { BrowserRouter as Router, Link, Route, Switch } from "react-router-dom";
-import { useState } from "react";
 
 function App() {
-  const [flip, setflip] = useState(false);
   return (
     <div className="App">
-      <World {...{ flip }} />
+      <World />
       <Router>
         <Switch>
           <Route exact path="/">

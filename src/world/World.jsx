@@ -9,7 +9,6 @@ import SimpleCube from "../components/SimpleCube";
 
 const World = (props) => {
   const mountRef = useRef(null);
-  const { flip } = props;
   // For debugging purposes
   var gui = useMemo(() => new dat.GUI(), []);
 
@@ -61,7 +60,7 @@ const World = (props) => {
     window.addEventListener("resize", onWindowResize, false);
 
     animate();
-  }, [scene, flip]);
+  }, [scene, CubeMesh, rotate]);
 
   return <div ref={mountRef} className={"anim"}></div>;
 };
