@@ -1,38 +1,24 @@
 import { useEffect, useRef, useMemo } from "react";
 import * as THREE from "three";
-import { Anim } from "../animations/PerlinMeshAnimation/Anim";
 import * as dat from "dat.gui";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import camera from "./Camera";
-import Boat from "./Boat";
 import Scene from "./Scene";
-import Lighthouse from "./Lighthouse";
-import Clouds from "./Clouds";
-import BoatController from "./BoatController";
 import * as TWEEN from "@tweenjs/tween.js";
-import { Material } from "three";
+import SimpleCube from "../components/SimpleCube";
 
-const World = () => {
+const World = (props) => {
   const mountRef = useRef(null);
+  const { flip } = props;
+  // For debugging purposes
   var gui = useMemo(() => new dat.GUI(), []);
 
+  // Scene
   const scene = Scene();
-  const { animation: meshAnimation, mesh } = Anim();
-  let lightHouse;
-  let boat;
-  let clouds;
-
-  Lighthouse(scene, gui).then((value) => (lightHouse = value));
-  Boat(scene, gui).then((value) => {
-    boat = value;
-    BoatController(boat.instance);
-  });
-  Clouds(scene, gui).then((value) => {
-    clouds = value;
-    console.log(value);
-  });
+  const { rotate, mesh: CubeMesh } = SimpleCube();
 
   useEffect(() => {
+    // Renderer
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     mountRef.current.appendChild(renderer.domElement);
@@ -42,6 +28,7 @@ const World = () => {
      */
     // ------ OrbitControls
     const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
 
     // // ------ Position
     // gui.add(camera.position, "z", -10, 10).step(0.02);
@@ -55,13 +42,12 @@ const World = () => {
 
     const clock = new THREE.Clock();
 
+    scene.add(CubeMesh);
+
     var animate = function () {
       const elapsedTime = clock.getElapsedTime();
-      if (boat) {
-        boat.rock(Math.sin(elapsedTime) / 3);
-      }
       requestAnimationFrame(animate);
-      meshAnimation();
+      rotate(elapsedTime);
       TWEEN.update();
       renderer.render(scene, camera);
     };
@@ -74,9 +60,8 @@ const World = () => {
 
     window.addEventListener("resize", onWindowResize, false);
 
-    scene.add(mesh);
     animate();
-  }, []);
+  }, [scene, flip]);
 
   return <div ref={mountRef} className={"anim"}></div>;
 };

@@ -1,26 +1,24 @@
 import "./App.scss";
-import Title from "./components/Title";
 import World from "./world/World";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import Developer from "./pages/Developer/Developer";
-import Designer from "./pages/Designer/Designer";
+import { BrowserRouter as Router, Link, Route, Switch } from "react-router-dom";
 import { useState } from "react";
 
 function App() {
-  const [animation, setAnimation] = useState(true);
+  const [flip, setflip] = useState(false);
   return (
     <div className="App">
-      {animation && <World />}
+      <World {...{ flip }} />
       <Router>
         <Switch>
           <Route exact path="/">
-            <Title {...{ setAnimation, animation }} />
+            <div>
+              <div>Add routes here!</div>
+              <Link to="/test">Click me</Link>
+            </div>
           </Route>
-          <Route path="/developer">
-            <Developer />
-          </Route>
-          <Route path="/designer">
-            <Designer />
+          <Route path="/test">
+            <div>This is react specifics!</div>
+            <Link to="/">go back</Link>
           </Route>
         </Switch>
       </Router>
